@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Test Bed - Simultaneous Download Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: #f7f9fc;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .status p {
+            color: #2e7d32;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .file-info {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .file-info h3 {
+            color: #e65100;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .file-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .file-info li {
+            color: #555;
+            font-size: 13px;
+            padding: 5px 0;
+            border-bottom: 1px solid #ffe0b2;
+        }
+
+        .file-info li:last-child {
+            border-bottom: none;
+        }
+
+        .file-info code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 File Test Bed</h1>
+        <p class="subtitle">Simultaneous Download Test for Chrome Extension</p>
+        
+        <div class="info-box">
+            <h3>📋 About This Test</h3>
+            <p>This page triggers simultaneous downloads of two encrypted ZIP files. Perfect for testing Chrome extensions that monitor or intercept file downloads.</p>
+        </div>
+
+        <div class="button-container">
+            <button id="downloadBtn" onclick="triggerSimultaneousDownloads()">
+                Download Both Files
+            </button>
+        </div>
+
+        <div class="file-info">
+            <h3>📦 Test Files</h3>
+            <ul>
+                <li><strong>File 1:</strong> <code>encrypted-file-1.zip</code> (Placeholder data)</li>
+                <li><strong>File 2:</strong> <code>encrypted-file-2.zip</code> (Placeholder data)</li>
+            </ul>
+        </div>
+
+        <div id="status" class="status">
+            <p id="statusText"></p>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder: minimal zip file structure (empty zip)
+        const EMPTY_ZIP_DATA_URL = 'data:application/zip;base64,UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==';
+        
+        // Placeholder data URLs for encrypted zip files
+        // These will be replaced with actual encrypted zip file data URLs
+        const FILE_DATA_URLS = {
+            file1: {
+                name: 'encrypted-file-1.zip',
+                dataUrl: EMPTY_ZIP_DATA_URL
+            },
+            file2: {
+                name: 'encrypted-file-2.zip',
+                dataUrl: EMPTY_ZIP_DATA_URL
+            }
+        };
+
+        /**
+         * Triggers simultaneous downloads of two encrypted zip files
+         * Uses data URLs to initiate downloads without server requests
+         */
+        function triggerSimultaneousDownloads() {
+            const button = document.getElementById('downloadBtn');
+            const status = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+
+            // Disable button during download
+            button.disabled = true;
+            button.textContent = 'Downloading...';
+
+            try {
+                // Create download links for both files
+                const link1 = createDownloadLink(FILE_DATA_URLS.file1.dataUrl, FILE_DATA_URLS.file1.name);
+                const link2 = createDownloadLink(FILE_DATA_URLS.file2.dataUrl, FILE_DATA_URLS.file2.name);
+
+                // Trigger both downloads simultaneously
+                link1.click();
+                
+                // Small delay to ensure both downloads trigger properly
+                setTimeout(() => {
+                    link2.click();
+                    
+                    // Clean up after a delay to ensure downloads are initiated
+                    // Some browsers may cancel downloads if elements are removed too quickly
+                    setTimeout(() => {
+                        document.body.removeChild(link1);
+                        document.body.removeChild(link2);
+                    }, 1000);
+                    
+                    // Show success status
+                    showStatus('✅ Both files have been triggered for download!', 'success');
+                    
+                    // Re-enable button
+                    button.disabled = false;
+                    button.textContent = 'Download Both Files';
+                }, 50);
+
+            } catch (error) {
+                console.error('Download error:', error);
+                showStatus('❌ Error triggering downloads: ' + error.message, 'error');
+                button.disabled = false;
+                button.textContent = 'Download Both Files';
+            }
+        }
+
+        /**
+         * Creates a hidden download link element
+         * @param {string} dataUrl - The data URL of the file
+         * @param {string} filename - The desired filename
+         * @returns {HTMLAnchorElement} The created link element
+         */
+        function createDownloadLink(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            return link;
+        }
+
+        /**
+         * Shows a status message to the user
+         * @param {string} message - The message to display
+         * @param {string} type - The type of message ('success' or 'error')
+         */
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.textContent = message;
+            status.className = 'status show';
+            
+            if (type === 'error') {
+                status.style.background = '#ffebee';
+                status.style.borderLeftColor = '#f44336';
+                statusText.style.color = '#c62828';
+            } else {
+                status.style.background = '#e8f5e9';
+                status.style.borderLeftColor = '#4caf50';
+                statusText.style.color = '#2e7d32';
+            }
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 5000);
+        }
+
+        // Log page load for debugging
+        console.log('File Test Bed loaded successfully');
+        console.log('Ready to test simultaneous downloads');
+    </script>
+</body>
+</html>
