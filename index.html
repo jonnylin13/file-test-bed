@@ -185,18 +185,19 @@
     </div>
 
     <script>
+        // Placeholder: minimal zip file structure (empty zip)
+        const EMPTY_ZIP_DATA_URL = 'data:application/zip;base64,UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==';
+        
         // Placeholder data URLs for encrypted zip files
         // These will be replaced with actual encrypted zip file data URLs
         const FILE_DATA_URLS = {
             file1: {
                 name: 'encrypted-file-1.zip',
-                // Placeholder: minimal zip file structure (empty zip)
-                dataUrl: 'data:application/zip;base64,UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA=='
+                dataUrl: EMPTY_ZIP_DATA_URL
             },
             file2: {
                 name: 'encrypted-file-2.zip',
-                // Placeholder: minimal zip file structure (empty zip)
-                dataUrl: 'data:application/zip;base64,UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA=='
+                dataUrl: EMPTY_ZIP_DATA_URL
             }
         };
 
@@ -225,9 +226,12 @@
                 setTimeout(() => {
                     link2.click();
                     
-                    // Clean up
-                    document.body.removeChild(link1);
-                    document.body.removeChild(link2);
+                    // Clean up after a delay to ensure downloads are initiated
+                    // Some browsers may cancel downloads if elements are removed too quickly
+                    setTimeout(() => {
+                        document.body.removeChild(link1);
+                        document.body.removeChild(link2);
+                    }, 1000);
                     
                     // Show success status
                     showStatus('✅ Both files have been triggered for download!', 'success');
